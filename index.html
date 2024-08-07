@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Car CRUD API</title>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <link rel="stylesheet" href="">
+  <style>
+    body { font-family: Arial, sans-serif; }
+    .container { width: 80%; margin: 0 auto; padding: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container" x-data="carApp()">
+    <h1>Car CRUD API</h1>
+    <button @click="getMostPopularMake()">Get Most Popular Make</button>
+    <div x-show="mostPopularMake">
+      <h2>Most Popular Car Make:</h2>
+      <p x-text="mostPopularMake"></p>
+    </div>
+  </div>
+
+  <script>
+    function carApp() {
+      return {
+        mostPopularMake: '',
+        async getMostPopularMake() {
+          try {
+            const response = await axios.get('http://localhost:3000/api/mostPopularMake');
+            this.mostPopularMake = response.data.mostPopularMake;
+          } catch (error) {
+            console.error('Error fetching data:', error);
+          }
+        }
+      }
+    }
+  </script>
+</body>
+</html>
