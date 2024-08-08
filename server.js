@@ -32,13 +32,19 @@ app.get('/api/mostPopularMake', (req, res) => {
 
   const mostPopularMake = Object.keys(makeCount).reduce((a, b) => makeCount[a] > makeCount[b] ? a : b);
 
-  res.json({ mostPopularMake });
+  const message = { mostPopularMake };
+
+  res.json(message);
+  setTimeout(() => {
+    message.mostPopularMake = null;
+  }, 100);
 });
 
 // CRUD Operations
 app.post('/api/car', (req, res) => {
   const newCar = req.body;
   cars.push(newCar);
+  console.log('Car added:', newCar); // Debug: Log the added car
   res.status(201).json(newCar);
 });
 
@@ -67,6 +73,10 @@ app.delete('/api/car/:reg_number', (req, res) => {
   const regNumber = req.params.reg_number;
   cars = cars.filter(c => c.reg_number !== regNumber);
   res.status(204).send();
+});
+
+app.get('/api/cars', (req, res) => {
+  res.json(cars);
 });
 
 // Start the server

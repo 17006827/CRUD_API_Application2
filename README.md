@@ -1,8 +1,19 @@
 # Car CRUD API
 
 ## Setup Instructions
+project
+│
+├── public
+│   ├── index.html
+│   ├── style.css
+│   └── app.js
+│
+├── server.js
+├── package.json
+└── test
+    └── api.test.js
 
-1. Clone the repository.
+1. Created the repository for the assesment .
 2. Run `npm install` to install dependencies.
 3. Start the server with `node server.js`.
 4. Open `public/index.html` in your browser or serve it via a static file server.
@@ -18,3 +29,19 @@
 ## Chosen Function
 
 The `mostPopularMake` function determines the most frequently occurring car make in the dataset.
+
+## Mocha test
+`npm install mocha chai --save-dev`
+"scripts": {
+  "test": "mocha"
+}
+npm test
+Each test makes a request to the corresponding endpoint and checks the response status and body to ensure it matches the expected results. This ensures that your API behaves correctly and that your CRUD operations are working as intended.
+
+
+
+
+
+
+
+

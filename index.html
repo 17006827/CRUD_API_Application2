@@ -6,19 +6,68 @@
   <title>Car CRUD API</title>
   <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <link rel="stylesheet" href="">
+  <link rel="stylesheet" href="public/style.css">
   <style>
     body { font-family: Arial, sans-serif; }
     .container { width: 80%; margin: 0 auto; padding: 20px; }
   </style>
 </head>
 <body>
-  <div class="container" x-data="carApp()">
+  <div class="container" x-data="carApp()" x-init="init()">
     <h1>Car CRUD API</h1>
+    
+    <!-- Most Popular Make Button and Display -->
     <button @click="getMostPopularMake()">Get Most Popular Make</button>
     <div x-show="mostPopularMake">
       <h2>Most Popular Car Make:</h2>
       <p x-text="mostPopularMake"></p>
+    </div>
+
+    <!-- Add New Car Form -->
+    <button @click="showAddCarForm = !showAddCarForm">Add New Car</button>
+    <div x-show="showAddCarForm">
+      <h2>Add New Car</h2>
+      <form @submit.prevent="addCar">
+        <label>Color:</label>
+        <input type="text" x-model="newCar.color" required>
+        <label>Make:</label>
+        <input type="text" x-model="newCar.make" required>
+        <label>Model:</label>
+        <input type="text" x-model="newCar.model" required>
+        <label>Registration Number:</label>
+        <input type="text" x-model="newCar.reg_number" required>
+        <button type="submit">Add Car</button>
+      </form>
+    </div>
+
+    <!-- Car Display and Operations -->
+    <div>
+      <h2>Car Details</h2>
+      <label>Registration Number:</label>
+      <input type="text" x-model="searchRegNumber">
+      <button @click="getCar()">Get Car</button>
+      <div class="car-details" x-show="car">
+        <p>Color: <span x-text="car.color"></span></p>
+        <p>Make: <span x-text="car.make"></span></p>
+        <p>Model: <span x-text="car.model"></span></p>
+        <p>Registration Number: <span x-text="car.reg_number"></span></p>
+        <button @click="deleteCar()">Delete Car</button>
+      </div>
+    </div>
+
+    <!-- Display All Cars -->
+    <div>
+      <h2>All Cars</h2>
+      <div x-show="cars.length">
+        <template x-for="car in cars" :key="car.reg_number">
+          <div class="car">
+            <p>Color: <span x-text="car.color"></span></p>
+            <p>Make: <span x-text="car.make"></span></p>
+            <p>Model: <span x-text="car.model"></span></p>
+            <p>Registration Number: <span x-text="car.reg_number"></span></p>
+          </div>
+        </template>
+      </div>
     </div>
   </div>
 
@@ -26,6 +75,11 @@
     function carApp() {
       return {
         mostPopularMake: '',
+        newCar: { color: '', make: '', model: '', reg_number: '' },
+        searchRegNumber: '',
+        car: null,
+        showAddCarForm: false,
+        cars: [],
         async getMostPopularMake() {
           try {
             const response = await axios.get('http://localhost:3000/api/mostPopularMake');
@@ -33,6 +87,48 @@
           } catch (error) {
             console.error('Error fetching data:', error);
           }
+        },
+        async addCar() {
+          try {
+            const response = await axios.post('http://localhost:3000/api/car', this.newCar);
+            console.log('Car added:', response.data); // Debug: Log the added car
+            alert('Car added successfully');
+            this.newCar = { color: '', make: '', model: '', reg_number: '' };
+            this.showAddCarForm = false;
+            this.fetchCars();
+          } catch (error) {
+            console.error('Error adding car:', error);
+          }
+        },
+        async getCar() {
+          try {
+            const response = await axios.get(`http://localhost:3000/api/car/${this.searchRegNumber}`);
+            this.car = response.data;
+          } catch (error) {
+            console.error('Error fetching car:', error);
+          }
+        },
+        async deleteCar() {
+          try {
+            await axios.delete(`http://localhost:3000/api/car/${this.car.reg_number}`);
+            alert('Car deleted successfully');
+            this.car = null;
+            this.fetchCars();
+          } catch (error) {
+            console.error('Error deleting car:', error);
+          }
+        },
+        async fetchCars() {
+          try {
+            const response = await axios.get('http://localhost:3000/api/cars');
+            this.cars = response.data;
+            console.log('Cars fetched:', this.cars); // Debug: Log the fetched cars
+          } catch (error) {
+            console.error('Error fetching cars:', error);
+          }
+        },
+        async init() {
+          this.fetchCars();
         }
       }
     }
